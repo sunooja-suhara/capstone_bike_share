@@ -40,12 +40,6 @@ df_bike_share$weekday <- with(df_bike_share,weekdays(started_at))
 df_bike_share$ride_month <- format(df_bike_share$started_at,format = "%b")
 df_bike_share$ride_year <- format(df_bike_share$started_at,format = "%Y")
 
-# Visualizing which user type has most rides in trip duration.
-
-ggplot(df_bike_share,mapping= aes(user_type,trip_duration )) + geom_bar() 
-
-ggplot(df_bike_share,aes(bike_type,ride_month)) + geom_abline(color="violet")
- 
 # no:of rides of user type in week days
 df_bike_share %>% 
   group_by(user_type,weekday) %>% 
