@@ -1,97 +1,156 @@
-# Importing libraries
 
-library(tidyverse)
+
 library(ggplot2)
-library(dplyr)
 library(skimr)
+library(tidyverse)
+library(dplyr)
+library(lubridate)
 
 
-# Importing data
-dec_2021 <- read.csv("/home/asker/Desktop/DataAnalyst/Project/bike_share/202112-divvy-tripdata.csv")
-jan_2022 <- read.csv('/home/asker/Desktop/DataAnalyst/Project/bike_share/202201-divvy-tripdata.csv')
-feb_2022 <- read.csv('/home/asker/Desktop/DataAnalyst/Project/bike_share/202202-divvy-tripdata.csv')
-march_2022 <- read.csv('/home/asker/Desktop/DataAnalyst/Project/bike_share/202203-divvy-tripdata.csv')
-april_2022 <- read.csv('/home/asker/Desktop/DataAnalyst/Project/bike_share/202204-divvy-tripdata.csv')
-may_2022 <- read.csv('/home/asker/Desktop/DataAnalyst/Project/bike_share/202205-divvy-tripdata.csv')
+aug_2021 <- read.csv("/Users/askerakbar/Downloads/Suhara/Data/202108-divvy-tripdata.csv")
+sep_2021 <- read.csv("/Users/askerakbar/Downloads/Suhara/Data/202109-divvy-tripdata.csv")
+oct_2021 <- read.csv("/Users/askerakbar/Downloads/Suhara/Data/202110-divvy-tripdata.csv")
+nov_2021 <- read.csv("/Users/askerakbar/Downloads/Suhara/Data/202111-divvy-tripdata.csv")
+dec_2021 <- read.csv("/Users/askerakbar/Downloads/Suhara/Data/202112-divvy-tripdata.csv")
+jan_2022 <- read.csv("/Users/askerakbar/Downloads/Suhara/Data/202201-divvy-tripdata.csv")
+feb_2022 <- read.csv("/Users/askerakbar/Downloads/Suhara/Data/202202-divvy-tripdata.csv")
+mar_2022 <- read.csv("/Users/askerakbar/Downloads/Suhara/Data/202203-divvy-tripdata.csv")
+aprl_2022 <- read.csv("/Users/askerakbar/Downloads/Suhara/Data/202204-divvy-tripdata.csv")
+may_2022 <- read.csv("/Users/askerakbar/Downloads/Suhara/Data/202205-divvy-tripdata.csv")
 
-#binding data to a data frame
+#Binding data into a data frame
+data_bike <- rbind(aug_2021,sep_2021,oct_2021,nov_2021,dec_2021,jan_2022,feb_2022,mar_2022,aprl_2022,may_2022)
+glimpse(data_bike)
+data_bike_share <- rbind(aug_2021,sep_2021,oct_2021,nov_2021,dec_2021,jan_2022,feb_2022,mar_2022,aprl_2022,may_2022)
 
-df_bike_share <- rbind(dec_2021,jan_2022,feb_2022,march_2022,april_2022,may_2022)
+#renaming existing columns
+colnames(data_bike_share)[colnames(data_bike_share) == "rideable_type"] <- "bike_type"
+colnames(data_bike_share)[colnames(data_bike_share) == "member_casual"] <- "user_type"
 
-#Changing col names.
-
-colnames(df_bike_share)[colnames(df_bike_share) == "rideable_type"] <- "bike_type"
-colnames(df_bike_share)[colnames(df_bike_share) == "member_casual"] <- "user_type"
-
-# Casting started_st and ended_at to time.
-df_bike_share$started_at <- strptime(df_bike_share$started_at, format = "%Y-%m-%d %H:%M:%S")
-df_bike_share$ended_at <- strptime(df_bike_share$ended_at, format = "%Y-%m-%d %H:%M:%S") 
-
-# Calculating duration of trip
-# Calculating Weekday,month and Year of the trip
-df_bike_share$trip_duration <- with(df_bike_share,ended_at - started_at)
-df_bike_share$trip_duration <- as.numeric(df_bike_share$trip_duration)
-df_bike_share$weekday <- with(df_bike_share,weekdays(started_at))
-df_bike_share$ride_month <- format(df_bike_share$started_at,format = "%m")
-trip_month <- format(df_bike_share$ride_month,format="%b")
-df_bike_share$ride_month <- ordered(df_bike_share$ride_month,month.name)
-df_bike_share$ride_year <- format(df_bike_share$started_at,format = "%Y")
-
-#cleaning data
-skim_without_charts(df_bike_share)
-head(df_bike_share)
-colnames(df_bike_share)
-#Eliminating null values
-df_list_clean <- na.omit(df_bike_share)
-# excluding negative values from trip_duration
-neg_trip <- nrow(df_bike_share[df_bike_share$trip <0,]) 
-fals_trip <- df_bike_share[df_bike_share$trip <0,]
+#casting started_at and ended_at to time data type
+data_bike_share$started_at <- strptime(data_bike_share$started_at, format = "%Y-%m-%d %H:%M:%S")
+data_bike_share$ended_at <- strptime(data_bike_share$ended_at, format = "%Y-%m-%d %H:%M:%S")
 
 
-# no:of rides of user type in week days
-df_list_clean %>% 
-  group_by(user_type,weekday) %>% 
-  summarise(number_of_rides = n()) %>% 
-  arrange(user_type) %>% 
-  ggplot(aes(x=weekday,y=number_of_rides,fill=user_type))+ geom_col(position = "dodge") +
-  labs(title = "User type and weekdays with total rides")
 
-# Visualizing no:of user using different bike type.
- df_bike_share %>% 
-   group_by(bike_type,user_type) %>% 
-   summarise(number_of_rides = n())%>%
-   arrange(bike_type,user_type) %>% 
-   ggplot(aes(x=bike_type,y=number_of_rides,fill=user_type)) + geom_col(position = "dodge")+
-   labs(title = "User type and bike type with total rides")
+## Calculating margin of error if calculated with na values and total negative values in trip duration.
+neg_trip <- nrow(data_bike_share[data_bike_share$trip_duration <=0, ])
+count_start_na <- nrow(data_bike_share[data_bike_share$start_station_name == "", ])
+count_endt_na <- nrow(data_bike_share[data_bike_share$end_station_name == "", ])
+total_row <- nrow(data_bike_share)
+margin_of_error <- ((count_start_na + count_endt_na) / total_row)* 100
 
-# members with longest trip duration and bike type
-df_list_clean %>% 
-  group_by(user_type,bike_type) %>% 
-  arrange(bike_type,user_type) %>% 
-  summarise(Avg_trip_duration= mean(trip_duration)) %>% 
-  ggplot(aes(x=bike_type,y=Avg_trip_duration,fill=user_type)) + geom_col(position = "dodge")+
-  labs(title = "Bike type and Average trip duartion")
 
-#members with trips in each month with bike type
-df_list_clean %>% 
-  group_by(user_type,bike_type) %>% 
-  arrange(user_type,bike_type) %>% 
-  ggplot(aes(x="bike_type",y=ride_month,fill=user_type)) + geom_col(position='dodge') + facet_grid(~bike_type)+
-  labs(title = "Month vise trip numbers for each bike type ")
+#Adding columns for analysis
+data_bike_share$trip_duration <-as.numeric(with(data_bike_share,ended_at - started_at))  
+data_bike_share$weekday <- with(data_bike_share,weekdays(started_at))
+data_bike_share$ride_month <- format(data_bike_share$started_at, format = "%b")
+data_bike_share$ride_year <- format(data_bike_share$started_at, format = "%Y")
+#Calculating the time of travel(morning,Afternoon,Eve,night)
+data_bike_share$start_hour <- hour(data_bike_share$started_at)
+data_bike_share$start_hour <- ifelse(data_bike_share$start_hour >=5 & data_bike_share$start_hour<11,"morning",
+                                   if_else(data_bike_share$start_hour>=11 & data_bike_share$start_hour <17,"Noon",
+                                           ifelse(data_bike_share$start_hour>=17 & data_bike_share$start_hour<22,"Evening","Night") ))
 
-#number of trips in each month
-df_bike_share %>% 
-  group_by(ride_month,user_type) %>% 
-  summarise(no_of_trips=mean(n())) %>% 
-  arrange(ride_month) %>% 
-  ggplot(aes(x=ride_month,y=no_of_trips,group=user_type,colour=user_type)) + geom_line() + 
-  labs(title = "Trips in each month")
 
-#no:of user type with average trips duration
-df_bike_share %>% 
+no_of_rides <- nrow(data_bike_share)
+no_of_rides<-mean(no_of_rides)
+
+#####Data Cleaning
+head(data_bike_share)
+glimpse(data_bike_share)
+skim_without_charts(data_bike_share)
+
+  
+######################
+#Avg trip duration and bike type
+data_bike_share %>% 
+  filter(trip_duration >0) %>% 
+  group_by(bike_type,user_type) %>% 
+  arrange(bike_type) %>% 
+  summarise(avg_trip_duration=mean(trip_duration),.groups = 'drop') %>% 
+  ggplot(aes(x=bike_type,y=avg_trip_duration,fill=user_type))+ 
+  geom_col(position = "dodge",,width =0.4)+
+  labs(title = "Average trip duration of each user in different bike type")
+
+# comparing users
+data_bike_share %>% 
   group_by(user_type) %>% 
-  summarise(Avg_trip_duration= mean(trip_duration)) %>% 
-  ggplot(aes(x=Avg_trip_duration,y=user_type,fill= user_type)) + geom_col(position= "dodge") + 
-  theme(aspect.ratio = .35) + labs(title = "Average trip duartion and user type")
+  summarise(no_of_rides=n()) %>% 
+  ggplot(aes(x="",y=no_of_rides,fill=user_type)) + geom_col(color="black") +
+  geom_text(aes(label=no_of_rides),position = position_stack(vjust = 0.5)) + coord_polar(theta = "y") + theme_void()+
+  scale_fill_brewer() +  labs(title = "Casual members Vs User with Membership")
+
+#comparing bike types
+data_bike_share %>% 
+  group_by(bike_type) %>% 
+  summarise(no_of_rides=n(),.groups = 'drop') %>% 
+  ggplot(aes(x="",y=no_of_rides,fill=bike_type)) + geom_col(color="black") +
+  geom_text(aes(label=no_of_rides),position = position_stack(vjust = 0.5)) + coord_polar(theta = "y") + theme_void()+
+  scale_fill_brewer()+ labs(title = "Comparing each bike types")
+
+#Comparing the rides in each hours(morning,Noon,Eve and night)
+data_bike_share %>% 
+  group_by(start_hour) %>% 
+  summarise(no_of_rides=n(),.groups = 'drop') %>% 
+  ggplot(aes(x="",y=no_of_rides,fill=start_hour)) + geom_col(color="black") +
+  geom_text(aes(label=no_of_rides),position = position_stack(vjust = 0.5)) + coord_polar(theta = "y") + theme_void()+
+  scale_fill_brewer()+
+  labs(title = "Rides in each time of a day")
+
+
+#Avg Trip for each day for different user type
+data_bike_share %>% 
+  filter(trip_duration >0) %>% 
+  group_by(weekday,user_type) %>%
+  summarise(avg_trip_duration= mean(trip_duration),.groups = 'drop') %>% 
+  ggplot(aes(x=weekday,y=avg_trip_duration,fill=user_type)) +
+  geom_col(position = "dodge") + labs(title = "Avg trip duration on each day for different user")
+
+#Avg Trip for each month for different user
+data_bike_share %>% 
+  filter(trip_duration >0) %>% 
+  group_by(ride_month,user_type) %>%
+  summarise(avg_trip_duration= mean(trip_duration),.groups = 'drop') %>% 
+  ggplot(aes(x=ride_month,y=avg_trip_duration,fill=user_type)) +
+  geom_col(position = "dodge")+labs(title = "Average trip duartion on each month for diffent user")
+
+#No:of trips in each year with user type
+data_bike_share %>% 
+  group_by(ride_year,user_type) %>% 
+  summarise(no_of_rides=n(),.groups = 'drop') %>% 
+  ggplot(aes(x=ride_year,y=no_of_rides,fill=user_type)) +
+  geom_col(position =position_dodge(),width =0.35) +
+  labs(title = "Number of trips in year for each user")
+
+#Avg of trips in each year with user type
+data_bike_share %>% 
+  group_by(ride_year,user_type) %>% 
+  summarise(avg_trip_duration= mean(trip_duration),.groups = 'drop') %>% 
+  ggplot(aes(x=ride_year,y=avg_trip_duration,fill=user_type)) +
+  geom_col(position = "dodge",width =0.35) +
+  labs(title = "Number of trips in year for each user")
+
+#Comparing the rides in each hours(morning,Noon,Eve and night)
+data_bike_share %>% 
+  group_by(start_hour) %>% 
+  summarise(no_of_rides=n(),.groups = 'drop') %>% 
+  ggplot(aes(x="",y=no_of_rides,fill=start_hour)) + geom_col(color="black") +
+  geom_text(aes(label=no_of_rides),position = position_stack(vjust = 0.5)) + coord_polar(theta = "y") + theme_void()+
+  scale_fill_brewer()+
+  labs(title = "Rides in each time of a day")
+
+#No of rides in each timing for different user type
+data_bike_share %>% 
+  group_by(start_hour,user_type,bike_type) %>% 
+  summarise(no_of_rides=n(),.groups = 'drop') %>% 
+  ggplot(aes(x=start_hour,y=no_of_rides,fill=user_type)) +
+  geom_col(position = "dodge") +
+  labs(title = "No of rides in each timing for differnt user type")
+
+  
+
+
+
 
 
