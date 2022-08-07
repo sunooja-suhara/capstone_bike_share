@@ -9,3 +9,5 @@ In 2016, Cyclistic launched a successful bike-share oﬀering. Since then, the p
 The goal of this project is to analyze the trends in data, how casual riders and annual members use Cyclistic bikes diﬀerently and how to convert casual riders into annual members.
 
 The Project Analysis is done in R. You can check the source code in the file [bikeshare_R.R](bikeshare_R.R)
+
+<img width="535" alt="image" src="https://user-images.githubusercontent.com/105748301/183287122-1953324d-86d0-438c-ac76-16ff255d81e5.png">
