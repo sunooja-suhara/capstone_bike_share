@@ -1,6 +1,6 @@
 # Google Data Analytics Capstone Project- Cyclistic Bike-Share Analysis.
 
-<img src="https://user-images.githubusercontent.com/105748301/183286751-32288963-1af8-4d9f-addd-de07a2152fd3.png" width="60">
+<img src="https://user-images.githubusercontent.com/105748301/183286751-32288963-1af8-4d9f-addd-de07a2152fd3.png" width="60%">
 
 ## Introduction.
 
