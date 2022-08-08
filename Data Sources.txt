@@ -1,0 +1,14 @@
+Capstone project Cyclistic Bike share
+
+Dataset from August 2021 to May 2022
+
+https://divvy-tripdata.s3.amazonaws.com/202108-divvy-tripdata.zip
+https://divvy-tripdata.s3.amazonaws.com/202109-divvy-tripdata.zip
+https://divvy-tripdata.s3.amazonaws.com/202110-divvy-tripdata.zip
+https://divvy-tripdata.s3.amazonaws.com/202111-divvy-tripdata.zip
+https://divvy-tripdata.s3.amazonaws.com/202112-divvy-tripdata.zip
+https://divvy-tripdata.s3.amazonaws.com/202201-divvy-tripdata.zip
+https://divvy-tripdata.s3.amazonaws.com/202202-divvy-tripdata.zip
+https://divvy-tripdata.s3.amazonaws.com/202203-divvy-tripdata.zip
+https://divvy-tripdata.s3.amazonaws.com/202204-divvy-tripdata.zip
+https://divvy-tripdata.s3.amazonaws.com/202205-divvy-tripdata.zip
