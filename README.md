@@ -10,3 +10,4 @@ The goal of this project is to analyze the trends in data, how casual riders and
 
 The Project Analysis is done in R. You can check the source code in the file [bikeshare_R.R](bikeshare_R.R)
 
+### [Download Project Report](https://github.com/sunooja-suhara/capstone_bike_share/blob/2527855b6b407651bc05d456f631bd2616f29726/Project%20Report%20-%20Capstone%20BikeShare%202022.pdf)
